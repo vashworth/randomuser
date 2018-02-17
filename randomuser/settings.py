@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 import shutil
+import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -21,12 +22,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '%$jk_qc&ti0n2uh80)cr(npy^if!cu++!a^d)fsgyrwa+2q+)h'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -44,9 +45,10 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django_mako_plus.RequestInitMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -97,14 +99,8 @@ WSGI_APPLICATION = 'randomuser.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'randomuser',
-        'USER': 'victoriaashworth',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-    },
 }
+DATABASES['default'] = dj_database_url.parse(os.environ.get('DATABASE_URL'), conn_max_age=0)
 
 
 # Password validation
@@ -146,13 +142,20 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     # SECURITY WARNING: this next line must be commented out at deployment
-    BASE_DIR,
+    #BASE_DIR,
 )
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+#change STATIC_ROOT to the following:
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+#append the following after STATIC_ROOT
+WHITENOISE_MAX_AGE = 604800
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 
 # A logger for DMP
-DEBUG_PROPAGATE_EXCEPTIONS = DEBUG  # SECURITY WARNING: never set this True on a live site
+DEBUG_PROPAGATE_EXCEPTIONS = DEBUG # SECURITY WARNING: never set this True on a live site
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
