@@ -53,6 +53,7 @@ def process_request(request):
 
             if (person.googleID is not None):
                 person.save()
+                json_response = "Updated person"
 
         except m.APIKey.DoesNotExist:
             json_response = "Invalid api key"
@@ -75,6 +76,7 @@ def process_request(request):
 
             if (p.googleID is not None):
                 p.save()
+                json_response = "Created new person"
 
     context = {
         'response': json_response,
